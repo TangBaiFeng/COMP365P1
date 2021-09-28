@@ -38,6 +38,21 @@ player alternates with each additional move.
 
     """
     raise NotImplementedError
+    
+
+    if board == initial_state():
+        return x
+    else:
+        count = 0
+        for i in 3:
+            for j in 3:
+                if board[i][j] is EMPTY:
+                    count+=1
+    if count % 2 is 1:
+        return X
+    else:
+        return O
+
 
 
 def actions(board):
@@ -54,7 +69,12 @@ X or an O in them.
 provided as input
     """
     raise NotImplementedError
-
+    mySet = {}
+    for i in 3:
+            for j in 3:
+                if board[i][j] is not EMPTY:
+                    myTuple = (i,j)
+                    mySet.add(myTuple)
 
 def result(board, action):
     """
