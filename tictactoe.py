@@ -1,13 +1,5 @@
 """
 Tic Tac Toe Player
-For all functions that accept a board as input, you may assume that it is a valid
-board (namely, that it is a list that contains three rows, each with three values of
-either X, O, or EMPTY). You should not modify the function declarations (the order
-or number of arguments to each function) provided.
-Once all functions are implemented correctly, you should be able to run python
-runner.py and play against your AI. And, since Tic-Tac-Toe is a tie given optimal play
-by both sides, you should never be able to beat the AI (though if you do not play
-optimally as well, it may beat you!)
 """
 
 from copy import deepcopy
@@ -31,18 +23,20 @@ def player(board):
     """
     Returns player who has the next turn on a board.
     """
+    xCount = 0
+    oCount = 0
     if board == initial_state():
         return X
-    else:
-        count = 0
-        for i in 3:
-            for j in 3:
-                if board[i][j] is EMPTY:
-                    count+=1
-    if count % 2 is 1:
-        return X
-    else:
+    for i in range(3):
+        for j in range(3):
+            if board[i][j] is X:
+                xCount +=1
+            if board[i][j] is O:
+                oCount +=1
+    if xCount > oCount:
         return O
+    else:
+        return X
 
 
 
@@ -51,10 +45,10 @@ def actions(board):
     Returns set of all possible actions (i, j) available on the board.
     """
     mySet = set()
-    for i in 3:
-            for j in 3:
-                if board[i][j] is not EMPTY:
-                    mySet.add((i,j))
+    for i in range(3):
+        for j in range(3):
+            if board[i][j] is EMPTY:
+                mySet.add((i,j))
     return mySet
 
 def result(board, action):
@@ -63,7 +57,7 @@ def result(board, action):
     """
     currPlayer = player(board)
     boardCopy = deepcopy(board)
-    if action < (3,3) and action >= (0,0) and board[action[0]][action[1]] == EMPTY:
+    if board[action[0]][action[1]] == EMPTY:
         boardCopy[action[0]][action[1]] = currPlayer
     else:
         raise Exception("Invalid Move")
@@ -73,22 +67,27 @@ def winner(board):
     """
     Returns the winner of the game, if there is one.
     """
-    
-    if board[0][0] == board[1][1] == board[2][2] and board[0][0] != EMPTY:
-        return board[0][0]
-    if board[0][2] == board[1][1] == board[2][0] and board[0][0] != EMPTY:
-        return board[0][0]
-    for x in 2:
+    for x in range(2):
         if board[x][0] == board[x][1] == board[x][2] and board[x][0] != EMPTY:
             return board[x][0]
         if board[0][x] == board[1][x] == board[2][x] and board[0][x] != EMPTY:
-            return board[x][0]
+            return board[0][x]
+    if board[0][0] == board[1][1] == board[2][2] and board[0][0] != EMPTY:
+        return board[0][0]
+    if board[0][2] == board[1][1] == board[2][0] and board[0][2] != EMPTY:
+        return board[0][2]
     return None
+
 def terminal(board):
     """
     Returns True if game is over, False otherwise.
     """
-    if (sum(row.count(EMPTY) for row in board) == 0) or winner(board) != None:
+    emptyCount =0
+    for i in range(3):
+        for j in range(3):
+            if board[i][j] is EMPTY:
+                emptyCount +=1
+    if emptyCount == 0 or winner(board) != None:
         return True
     return False
 
@@ -97,23 +96,54 @@ def utility(board):
     """
     Returns 1 if X has won the game, -1 if O has won, 0 otherwise.
     """
-    if winner(board) == X:
-        return 1
-    if winner(board) == O:
-        return -1
-    return 0
+    return 1 if winner(board) == X else -1 if winner(board) == O else 0
 
 
 def minimax(board):
     """
     Returns the optimal action for the current player on the board.
-     The minimax function should take a board as input and return the optimal
-move for the player to move on that board.
-❖ The move returned should be the optimal action (i, j) that is one of the
-allowable actions on the board. If multiple moves are equally optimal,
-any of those moves is acceptable.
-❖ If the board is a terminal board, the minimax function should return
-None.
 
     """
-    raise NotImplementedError
+    def maxVal(board):
+        if terminal(board):
+            return utility(board)
+        score = -math.inf
+        for action in actions(board):
+            score = max(score, minVal(result(board, action)))        
+        return score
+
+    def minVal(board):
+        if terminal(board):
+            return utility(board)
+        score = math.inf
+        for action in actions(board):
+            score = min(score, maxVal(result(board, action)))            
+        return score
+
+    if terminal(board):
+        return None
+    if board == initial_state():
+        return (0,0)
+
+    if player(board)== X:
+        score = -math.inf
+        moveList = []
+        for action in actions(board):
+            score = max(score, minVal(result(board, action)))
+            if score == 1:
+                return action
+            if score > -1:
+                moveList.append((score, action))
+        return moveList[0][1]
+
+    else:
+        score = math.inf
+        moveList = []
+        for action in actions(board):
+            score = min(score, maxVal(result(board, action)))
+            if score == -1:
+                return action
+            if score < 1:
+                moveList.append((score, action))
+        return moveList[0][1]
+        
