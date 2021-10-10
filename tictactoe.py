@@ -1,15 +1,17 @@
 """
 Tic Tac Toe Player
 """
+# This program consists of methods that are created for a tic tac toe game between a computer and a user
 
 from copy import deepcopy
 import math
 
+# Global Variables
 X = "X"
 O = "O"
 EMPTY = None
 
-
+# Returns an empty board with no moves
 def initial_state():
     """
     Returns starting state of the board.
@@ -19,6 +21,7 @@ def initial_state():
             [EMPTY, EMPTY, EMPTY]]
 
 
+# Returns the next player's turn
 def player(board):
     """
     Returns player who has the next turn on a board.
@@ -39,7 +42,7 @@ def player(board):
         return X
 
 
-
+# Returns the a set of all actions that are possible
 def actions(board):
     """
     Returns set of all possible actions (i, j) available on the board.
@@ -51,6 +54,7 @@ def actions(board):
                 mySet.add((i,j))
     return mySet
 
+# Returns the board after the move is made
 def result(board, action):
     """
     Returns the board that results from making move (i, j) on the board.
@@ -63,6 +67,7 @@ def result(board, action):
         raise Exception("Invalid Move")
     return boardCopy
 
+# Returns the winner of the game
 def winner(board):
     """
     Returns the winner of the game, if there is one.
@@ -78,6 +83,7 @@ def winner(board):
         return board[0][2]
     return None
 
+# Returns a boolean based on the game results
 def terminal(board):
     """
     Returns True if game is over, False otherwise.
@@ -92,24 +98,25 @@ def terminal(board):
     return False
 
 
+# Returns 1 if X won the game, -1 if 0 has won, and 0 if its a tie
+
 def utility(board):
     """
     Returns 1 if X has won the game, -1 if O has won, 0 otherwise.
     """
     return 1 if winner(board) == X else -1 if winner(board) == O else 0
 
-
+# Returns the best action for the current player on the board
 def minimax(board):
     """
     Returns the optimal action for the current player on the board.
-
     """
     def maxVal(board):
         if terminal(board):
             return utility(board)
         score = -math.inf
         for action in actions(board):
-            score = max(score, minVal(result(board, action)))        
+            score = max(score, minVal(result(board, action)))
         return score
 
     def minVal(board):
@@ -117,7 +124,7 @@ def minimax(board):
             return utility(board)
         score = math.inf
         for action in actions(board):
-            score = min(score, maxVal(result(board, action)))            
+            score = min(score, maxVal(result(board, action)))
         return score
 
     if terminal(board):
@@ -146,4 +153,3 @@ def minimax(board):
             if score < 1:
                 moveList.append((score, action))
         return moveList[0][1]
-        
