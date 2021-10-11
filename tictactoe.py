@@ -30,8 +30,8 @@ def player(board):
     oCount = 0
     if board == initial_state():
         return X
-    for i in range(3):
-        for j in range(3):
+    for i in range(len(board)):
+        for j in range(len(board)):
             if board[i][j] is X:
                 xCount +=1
             if board[i][j] is O:
@@ -48,8 +48,8 @@ def actions(board):
     Returns set of all possible actions (i, j) available on the board.
     """
     mySet = set()
-    for i in range(3):
-        for j in range(3):
+    for i in range(len(board)):
+        for j in range(len(board)):
             if board[i][j] is EMPTY:
                 mySet.add((i,j))
     return mySet
@@ -72,7 +72,7 @@ def winner(board):
     """
     Returns the winner of the game, if there is one.
     """
-    for x in range(2):
+    for x in range(len(board)):
         if board[x][0] == board[x][1] == board[x][2] and board[x][0] != EMPTY:
             return board[x][0]
         if board[0][x] == board[1][x] == board[2][x] and board[0][x] != EMPTY:
@@ -89,8 +89,8 @@ def terminal(board):
     Returns True if game is over, False otherwise.
     """
     emptyCount =0
-    for i in range(3):
-        for j in range(3):
+    for i in range(len(board)):
+        for j in range(len(board)):
             if board[i][j] is EMPTY:
                 emptyCount +=1
     if emptyCount == 0 or winner(board) != None:
